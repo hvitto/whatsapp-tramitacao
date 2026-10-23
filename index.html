@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>WhatsApp da tramitação</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --paper: #f7f7f8;
+      --ink: #111111;
+      --muted: #6b7280;
+      --faint: #9ca3af;
+      --line: #ececee;
+      --line-strong: #e5e7eb;
+      --chip: #f4f4f5;
+      --late: #fff5f6;
+      --cortar: #e11d48;
+      --cortar-bg: #ffe4e8;
+      --confirmar: #c4841d;
+      --confirmar-bg: #fef3c7;
+      --manter: #178a4a;
+      --manter-bg: #dcf5e6;
+      --radius: 0;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { margin: 0; min-height: 100%; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font: 14px/1.45 Geist, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button { font: inherit; color: inherit; }
+
+    .page { padding-bottom: 48px; }
+
+    .band {
+      padding-left: 28px;
+      padding-right: 28px;
+    }
+
+    header.band { padding-top: 28px; padding-bottom: 8px; }
+
+    .crumb {
+      margin: 0 0 2px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.2;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .lede {
+      max-width: 68ch;
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .callout {
+      margin: 16px 28px 0;
+      padding: 14px 16px;
+      background: var(--confirmar-bg);
+    }
+
+    .callout strong {
+      display: block;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .callout p { margin: 0; }
+
+    .callout.info {
+      background: var(--chip);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 24px;
+      margin: 20px 28px 0;
+      padding: 16px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .stats b {
+      display: block;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.1;
+    }
+
+    .stats span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .stats .manter b { color: var(--manter); }
+    .stats .cortar b { color: var(--cortar); }
+    .stats .confirmar b { color: var(--confirmar); }
+
+    section { margin-top: 28px; }
+
+    h2 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    h3 {
+      margin: 18px 0 6px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .prose {
+      max-width: 72ch;
+      margin: 0;
+    }
+
+    .prose + .prose { margin-top: 8px; }
+
+    .table-wrap { overflow-x: auto; margin-top: 12px; }
+
+    table {
+      width: 100%;
+      min-width: 920px;
+      border-collapse: collapse;
+    }
+
+    table.short {
+      width: auto;
+      min-width: 0;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      padding: 10px 12px;
+      text-align: left;
+      background: var(--paper);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    th:first-child, td:first-child { padding-left: 28px; }
+    th:last-child, td:last-child { padding-right: 28px; }
+
+    td {
+      padding: 16px 12px;
+      border-top: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    .evento {
+      display: block;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .origem {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 400;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 24px;
+      padding: 0 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .pill::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    tr.manter .pill { color: var(--manter); background: var(--manter-bg); }
+    tr.cortar { background: var(--late); }
+    tr.cortar .pill { color: var(--cortar); background: var(--cortar-bg); }
+    tr.confirmar .pill { color: var(--confirmar); background: var(--confirmar-bg); }
+    tr.neutro .pill { color: var(--muted); background: var(--chip); }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 12px;
+    }
+
+    .filters button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 32px;
+      padding: 0 10px;
+      border: 0;
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .filters b {
+      font-weight: 600;
+      color: var(--faint);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .filters button[aria-pressed="true"] {
+      background: var(--ink);
+      color: #fff;
+    }
+
+    .filters button[aria-pressed="true"] b { color: #fff; }
+
+    .filters button:focus-visible {
+      outline: 2px solid var(--ink);
+      outline-offset: 2px;
+    }
+
+    .count {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .fine {
+      margin: 10px 0 0;
+      color: var(--faint);
+      font-size: 13px;
+    }
+
+    .rule {
+      height: 1px;
+      margin: 28px 28px 0;
+      background: var(--line-strong);
+      border: 0;
+    }
+
+    @media (max-width: 800px) {
+      .stats { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="band">
+      <p class="crumb">Proposta · Drata · 23 out 2026</p>
+      <h1>WhatsApp da tramitação</h1>
+      <p class="lede">Mapa do que mudaria para quem abriu o processo. Nenhuma mensagem foi desligada. Fonte: incity-api, coleção de processo eletrônico, leitura em 23 out 2026.</p>
+    </header>
+
+    <div class="callout" role="note">
+      <strong>Ainda é proposta</strong>
+      <p>O secretário pediu para reduzir o WhatsApp de quem abriu a intimação, diligência e inserção de boleto. Os cinco cortes abaixo são o que esse pedido troca. Os dezoito itens em confirmar não entram até alguém decidir.</p>
+    </div>
+
+    <div class="stats">
+      <div><b>26</b><span>Disparos ativos</span></div>
+      <div class="manter"><b>3</b><span>Manter para quem abriu</span></div>
+      <div class="cortar"><b>5</b><span>Cortar para quem abriu</span></div>
+      <div class="confirmar"><b>18</b><span>Decidir antes de mexer</span></div>
+    </div>
+
+    <section class="band" aria-labelledby="quem">
+      <h2 id="quem">Quem é “quem abriu”</h2>
+      <p class="prose">Não é um destinatário só. Em cada evento de tramitação o mesmo texto cai em três grupos, com telefone repetido enviado uma vez.</p>
+      <div class="table-wrap">
+        <table class="short">
+          <thead>
+            <tr>
+              <th scope="col">Grupo</th>
+              <th scope="col">Como entra</th>
+              <th scope="col">Consegue desligar?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="cortar">
+              <td>Requerente e beneficiário</td>
+              <td>applicant_telephone e interested_telephone, em notifyParticipants.ts</td>
+              <td><span class="pill">Não</span></td>
+            </tr>
+            <tr class="confirmar">
+              <td>Criador do processo</td>
+              <td>Entra sozinho em interested_parties com WhatsApp ligado</td>
+              <td><span class="pill">Padrão ligado</span></td>
+            </tr>
+            <tr class="neutro">
+              <td>Destinatário da ação</td>
+              <td>Responsável da etapa, do setor, da intimação ou o signatário</td>
+              <td><span class="pill">Fora deste corte</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="fine">O e-mail desse fluxo está no código e permanece desligado. O arquivo sendStepUpdateWhatsApp.ts repete encaminhar, receber, recusar, cancelar e concluir, mas nenhum caso de uso o chama.</p>
+    </section>
+
+    <hr class="rule" />
+
+    <section class="band" aria-labelledby="troca">
+      <h2 id="troca">O que trocaria</h2>
+      <div class="filters" role="group" aria-label="Filtrar disparos">
+        <button type="button" data-filtro="todos" aria-pressed="true">Todos <b>26</b></button>
+        <button type="button" data-filtro="manter" aria-pressed="false">Manter <b>3</b></button>
+        <button type="button" data-filtro="cortar" aria-pressed="false">Cortar <b>5</b></button>
+        <button type="button" data-filtro="confirmar" aria-pressed="false">Confirmar <b>18</b></button>
+      </div>
+      <p class="count" id="contagem" aria-live="polite">26 de 26 disparos. Cortar significa silenciar requerente, beneficiário e criador. O servidor da ação continua.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Evento</th>
+              <th scope="col">Quem abriu recebe hoje</th>
+              <th scope="col">Proposta</th>
+              <th scope="col">Efeito se confirmado</th>
+              <th scope="col">Quem não muda</th>
+            </tr>
+          </thead>
+          <tbody id="linhas"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="band" aria-labelledby="trava">
+      <h2 id="trava">Decisão que trava a alteração</h2>
+      <h3>Interessados além de quem abriu</h3>
+      <p class="prose">O aviso geral é o mesmo para quem abriu e para qualquer interessado com WhatsApp ligado. Cortar só o requerente, o beneficiário e o criador deixa o restante recebendo. Cortar o aviso geral inteiro silencia também quem foi incluído de propósito. O pedido do secretário cobre só quem abriu; a sugestão deste mapa é essa, não o corte total.</p>
+      <h3>Desfechos que ele não citou</h3>
+      <p class="prose">Conclusão, cancelamento, recusa do requerimento, comprovante recusado e confirmação de pagamento não estão na lista. Estão em confirmar, com sugestão de manter, porque cada um ocorre poucas vezes e o cidadão fica esperando a resposta.</p>
+    </section>
+
+    <div class="callout info" role="note">
+      <strong>Fora deste mapa</strong>
+      <p>O código de assinatura por WhatsApp só sai quando a pessoa pede o código. Não é aviso automático de tramitação. Vacina, eventos e outros produtos do incity-api também ficam de fora.</p>
+    </div>
+  </div>
+
+  <script>
+    var DISPAROS = [
+      ["Nova intimação", "summons/useCases/create.ts", "Aviso geral. Se for o responsável, também a mensagem direta.", "manter", "Continua. É um dos três avisos que o secretário quer preservar.", "Responsável da intimação continua com a mensagem direta."],
+      ["Nova diligência", "summons/useCases/createDiligence.ts", "Aviso geral. Se for o responsável, também a mensagem direta.", "manter", "Continua. É um dos três avisos que o secretário quer preservar.", "Responsável da diligência continua com a mensagem direta."],
+      ["Boleto inserido", "processRequest/useCases/setBoleto.ts", "Só o telefone interested_telephone do requerimento.", "manter", "Continua. Não passa pelo aviso geral da tramitação.", "Não há destinatário interno neste disparo."],
+      ["Etapa encaminhada", "process/useCases/nextStep.ts", "Aviso geral: processo encaminhado para uma nova etapa.", "cortar", "Quem abriu deixa de receber. É movimento interno.", "Novo responsável, ou os workers do setor, continuam."],
+      ["Processo recebido", "process/useCases/receive.ts", "Aviso geral: processo recebido e em andamento.", "cortar", "Quem abriu deixa de receber.", "Quem encaminhou continua recebendo a confirmação."],
+      ["Etapa recusada", "process/useCases/refuse.ts", "Aviso geral: etapa recusada e processo devolvido.", "cortar", "Quem abriu deixa de receber.", "Responsável da etapa anterior continua, com o motivo."],
+      ["Encaminhamento cancelado", "process/useCases/cancelForward.ts", "Aviso geral: encaminhamento cancelado.", "cortar", "Quem abriu deixa de receber.", "Responsável do passo cancelado continua."],
+      ["Documento inserido", "process/useCases/insertDocumentsV2.ts", "Aviso geral, sem mensagem direta separada.", "cortar", "Quem abriu deixa de receber. Vale para documento novo e existente.", "Não há destinatário direto. Outros interessados dependem da decisão abaixo."],
+      ["Intimação aprovada", "summons/useCases/approve.ts", "Aviso geral de que a intimação foi aprovada.", "confirmar", "Sugestão: manter. É o desfecho do aviso que o secretário quer preservar.", "Responsável continua. Quem aprovou é excluído do próprio aviso."],
+      ["Intimação reprovada", "summons/useCases/reject.ts", "Aviso geral de reprovação.", "confirmar", "Sugestão: manter, pelo mesmo motivo da aprovação.", "Responsável continua, com o contexto da reprovação."],
+      ["Diligência aprovada", "summons/useCases/approveDiligence.ts", "Aviso geral de aprovação.", "confirmar", "Sugestão: manter. É o retorno da diligência.", "Responsável continua. Quem aprovou é excluído."],
+      ["Diligência reprovada", "summons/useCases/rejectDiligence.ts", "Aviso geral de reprovação.", "confirmar", "Sugestão: manter.", "Responsável continua. Quem reprovou é excluído."],
+      ["Intimação ou diligência respondida", "summonsResponse/useCases/create.ts", "Aviso geral de que houve resposta.", "confirmar", "Sugestão: cortar para quem abriu. O aviso serve a quem criou a intimação para analisar a resposta.", "Autor da intimação ou diligência continua."],
+      ["Processo finalizado", "process/useCases/finish.ts", "Aviso geral de conclusão. Não há mensagem direta.", "confirmar", "Sugestão: manter uma única mensagem. Não está na lista do secretário, mas é o fim do processo.", "Ninguém recebe à parte."],
+      ["Status alterado", "process/useCases/updateStatus.ts", "Cancelado, concluído, aguardando pagamento, ou qualquer outro status.", "confirmar", "Sugestão: manter cancelado e concluído; cortar aguardando pagamento e status genérico.", "Ninguém recebe à parte."],
+      ["Assinatura solicitada no documento", "summons/useCases/requestDocumentSignature.ts", "Aviso geral, além da mensagem direta ao signatário.", "confirmar", "Sugestão: quem abriu só recebe se for o signatário. O aviso geral para ele sai.", "Signatário continua com o pedido direto."],
+      ["Documento assinado e devolvido", "summons/useCases/respondDocumentSignature.ts", "Aviso geral de que um documento foi assinado.", "confirmar", "Sugestão: cortar para quem abriu. O pedido de revisão é de quem solicitou a assinatura.", "Quem pediu a assinatura continua."],
+      ["Assinatura de documento recusada", "summons/useCases/refuseDocumentSignature.ts", "Aviso geral, sem o motivo. O motivo vai só na mensagem direta.", "confirmar", "Sugestão: cortar o aviso geral. Manter a recusa para quem pediu a assinatura.", "Solicitante continua e recebe o motivo."],
+      ["Assinatura de documento aprovada", "summons/useCases/approveDocumentSignature.ts", "Aviso geral de aprovação.", "confirmar", "Sugestão: quem abriu só recebe se for o signatário aprovado.", "Signatário continua. Quem aprovou é excluído."],
+      ["Documento atualizado para outro signatário", "summons/useCases/approveDocumentSignature.ts", "A mensagem pede para assinar a versão nova. O aviso geral está anulado no código, mas o fallback reenvia o mesmo texto a quem abriu.", "confirmar", "Sugestão: corrigir o vazamento e mandar só ao signatário pendente.", "Signatário pendente deve ser o único destinatário."],
+      ["Assinatura em intimação", "respondSignature.ts, refuseSignature.ts, approveSignature.ts", "Aviso geral em devolução, recusa e aprovação.", "confirmar", "Mesma regra do documento: direto para signatário ou solicitante; aviso geral de quem abriu sai.", "Solicitante ou signatário continua, conforme a ação."],
+      ["Requerimento aprovado", "processRequest/useCases/approveRequest.ts", "Telefone do requerimento: processo iniciado.", "confirmar", "Sugestão: manter. Acontece uma vez, antes da tramitação repetida.", "Não há destinatário interno."],
+      ["Requerimento recusado", "processRequest/useCases/rejectRequest.ts", "Telefone do requerimento, com o motivo.", "confirmar", "Sugestão: manter. Sem isso o cidadão não fica sabendo da recusa.", "Não há destinatário interno."],
+      ["Comprovante recusado", "processRequest/useCases/rejectPayment.ts", "Telefone do requerimento, com o motivo e o pedido de reenvio.", "confirmar", "Sugestão: manter. É uma pendência de pagamento, não ruído de etapa.", "Não há destinatário interno."],
+      ["Pagamento confirmado, em análise", "processRequest/utils/finalizeProcessRequestPayment.ts", "Telefone do requerimento: pagamento ok e requerimento em análise.", "confirmar", "Sugestão: manter. É um único aviso de que o pagamento entrou.", "Não há destinatário interno. Há aviso separado no Discord, fora do WhatsApp do cidadão."],
+      ["Pagamento confirmado e processo iniciado", "processRequest/utils/finalizeProcessRequestPayment.ts", "Telefone do requerimento, com link do processo.", "confirmar", "Sugestão: manter. Também ocorre uma vez.", "Não há destinatário interno no WhatsApp."]
+    ];
+
+    var ROTULO = { manter: "Manter", cortar: "Cortar", confirmar: "Confirmar" };
+    var filtro = "todos";
+    var corpo = document.getElementById("linhas");
+    var contagem = document.getElementById("contagem");
+
+    function celula(texto) {
+      var td = document.createElement("td");
+      td.textContent = texto;
+      return td;
+    }
+
+    function desenhar() {
+      var visiveis = filtro === "todos" ? DISPAROS : DISPAROS.filter(function (item) { return item[3] === filtro; });
+      corpo.replaceChildren();
+      visiveis.forEach(function (item) {
+        var tr = document.createElement("tr");
+        tr.className = item[3];
+        var evento = document.createElement("td");
+        var nome = document.createElement("span");
+        nome.className = "evento";
+        nome.textContent = item[0];
+        var origem = document.createElement("span");
+        origem.className = "origem";
+        origem.textContent = item[1];
+        evento.append(nome, origem);
+        var proposta = document.createElement("td");
+        var pill = document.createElement("span");
+        pill.className = "pill";
+        pill.textContent = ROTULO[item[3]];
+        proposta.append(pill);
+        tr.append(evento, celula(item[2]), proposta, celula(item[4]), celula(item[5]));
+        corpo.append(tr);
+      });
+      contagem.textContent = visiveis.length + " de " + DISPAROS.length + " disparos. Cortar significa silenciar requerente, beneficiário e criador. O servidor da ação continua.";
+    }
+
+    document.querySelectorAll(".filters button").forEach(function (botao) {
+      botao.addEventListener("click", function () {
+        filtro = botao.getAttribute("data-filtro");
+        document.querySelectorAll(".filters button").forEach(function (outro) {
+          outro.setAttribute("aria-pressed", outro === botao ? "true" : "false");
+        });
+        desenhar();
+      });
+    });
+
+    desenhar();
+  </script>
+</body>
+</html>
